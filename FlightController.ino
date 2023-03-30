@@ -1,6 +1,5 @@
 #include <Wire.h>
 #include "I2Cdev.h"
-#include "MPU6050.h"
 
 //========================================================================================================================//
 //                                  Joshua Caratao's Quadcopter Flight Controller Code                                    // 
@@ -44,9 +43,9 @@ float aLSB;
 float gLSB;
 
 //Declare Accelerometer and Gyro Offset Values 
-float accOffseX = 0;
-float accOffseY = 0;
-float accOffseZ = 0;
+float accOffsetX = 0;
+float accOffsetY = 0;
+float accOffsetZ = 0;
 
 float gyroOffsetX = 0;
 float gyroOffsetY = 0;
@@ -218,7 +217,7 @@ void processIMU() {
 
   //Compute Accel
   gForceX = (AccX / aLSB) - accOffsetX ;
-  gForceY = (AccY / aLSB) - accOffsety;
+  gForceY = (AccY / aLSB) - accOffsetY;
   gForceZ = (AccZ / aLSB) - accOffsetZ + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
 
   //Compute Gyro
@@ -231,7 +230,7 @@ void processIMU() {
 //This function calculated the acceleration and gyro offsets .
 void calibrateIMU(){
   //Set begin time
-  time1 = millis();
+  float time1 = millis();
 
   //Sets the total of the IMU values recorded to be averaged
   float gForceTotalX = 0;
@@ -241,7 +240,7 @@ void calibrateIMU(){
   float rotTotalY = 0;
   float rotTotalZ = 0;
 
-  samples = 0;
+  int samples = 0;
   while(((millis() - time1)/ (1000)) < 5){
     readIMU();
     
@@ -250,8 +249,8 @@ void calibrateIMU(){
     gForceTotalZ += gForceZ;
 
     rotTotalX += rotX;
-    rotTotaly += roty;
-    rotTotalz += rotZ;  
+    rotTotalY += rotY;
+    rotTotalZ += rotZ;  
 
     //increase the sample size by 1 each each loop
     samples += 1;
