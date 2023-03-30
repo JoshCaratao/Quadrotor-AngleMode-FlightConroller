@@ -2,6 +2,10 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
+//========================================================================================================================//
+//                                  Joshua Caratao's Quadcopter Flight Controller Code                                    // 
+//           All methods have either been written completely by myself or learned and adapted from other resources.       //
+//========================================================================================================================//
 
 //Declare Radio Reciever Pins
 // const int Chn_1_Pin = ;  //Throttle
@@ -39,6 +43,15 @@ const int gyroFullScaleRange = 1;
 float aLSB; 
 float gLSB;
 
+//Declare Accelerometer and Gyro Offset Values 
+float accOffseX = 0;
+float accOffseY = 0;
+float accOffseZ = 0;
+
+float gyroOffsetX = 0;
+float gyroOffsetY = 0;
+float gyroOffsetZ = 0;
+
 
 //========================================================================================================================//
 //                                                      VOID SETUP                                                        //                           
@@ -50,6 +63,7 @@ void setup() {
   Wire.begin(); //This initializes I2C communication. It is absolutely essential
   setLSB(); //This just sets the LSB values according to the FullScaleRange chosen above
   setupMPU(); //sets up the MPU for reading
+  calibrateIMU(); //After the program starts, set the craft on a flat surface to calibrate IMU for 5 seconds
 
 }
 
@@ -65,10 +79,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   readIMU(); //This calls both the readIMU function and the ProcessIMU function
   printData(); //Print out IMU Data
-  delay(200);
-
-
-
+  delay(100);
 }
 
 
@@ -83,7 +94,6 @@ void loop() {
 
 //This Function establishes communication with an MPU and sets up all the registers which we will be using to read the data from the IMU
 void setupMPU(){
-
   Wire.beginTransmission(0b1101000); //This is the I2C address of the IMU
   Wire.write(0x6B); //Accessing the register 6B - Power management (Sec. 4.28) This register allows the user to configure the power mode.
   //From the datasheet, we know that the device starts up in sleep mode. Hence, we acccess this register to change that.
@@ -138,7 +148,8 @@ void setupMPU(){
 
 }
 
-//This function  reads the data from the IMU and returns the calculated IMU values 
+
+//This function  reads the data from the IMU and calls the processIMU function to compute the values of acceleration and rotational velocity. 
 void readIMU(){
   //NOTE: According to the datasheet. The actual gyro and accel values we want must be calculated from the raw readings by 
   //dividing by the LSB/g value, which depends on the FullScaleRange used.
@@ -166,6 +177,7 @@ void readIMU(){
 
   processIMU();
 }
+
 
 //This sets the LSB/g and LSB/deg/s values used to calculate data from IMU
 void setLSB(){
@@ -200,20 +212,63 @@ void setLSB(){
 
 }
 
+
 //This function takes the raw IMU Data and processes them into useable values
 void processIMU() {
 
   //Compute Accel
-  gForceX = AccX / aLSB;
-  gForceY = AccY / aLSB;
-  gForceZ = AccZ / aLSB;
+  gForceX = (AccX / aLSB) - accOffsetX ;
+  gForceY = (AccY / aLSB) - accOffsety;
+  gForceZ = (AccZ / aLSB) - accOffsetZ + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
 
   //Compute Gyro
-  rotX = GyroX / gLSB;
-  rotY = GyroY / gLSB;
-  rotZ = GyroZ / gLSB;
+  rotX = (GyroX / gLSB) - gyroOffsetX;
+  rotY = (GyroY / gLSB) - gyroOffsetY;
+  rotZ = (GyroZ / gLSB) - gyroOffsetZ;
 
 }
+
+//This function calculated the acceleration and gyro offsets .
+void calibrateIMU(){
+  //Set begin time
+  time1 = millis();
+
+  //Sets the total of the IMU values recorded to be averaged
+  float gForceTotalX = 0;
+  float gForceTotalY = 0;
+  float gForceTotalZ = 0;
+  float rotTotalX = 0;
+  float rotTotalY = 0;
+  float rotTotalZ = 0;
+
+  samples = 0;
+  while(((millis() - time1)/ (1000)) < 5){
+    readIMU();
+    
+    gForceTotalX += gForceX;
+    gForceTotalY += gForceY;
+    gForceTotalZ += gForceZ;
+
+    rotTotalX += rotX;
+    rotTotaly += roty;
+    rotTotalz += rotZ;  
+
+    //increase the sample size by 1 each each loop
+    samples += 1;
+  }
+
+  //Compute the averages of each IMU value over a 5 second time period (or whatever time period works best) and set the offsets.
+  accOffsetX = (gForceTotalX / samples);
+  accOffsetY = (gForceTotalY / samples);
+  accOffsetZ = (gForceTotalZ / samples);
+
+  gyroOffsetX = (rotTotalX / samples);
+  gyroOffsetY = (rotTotalY / samples);
+  gyroOffsetZ = (rotTotalZ / samples);
+  
+}
+
+
 
 //Prints out the IMU Data 
 void printData(){
