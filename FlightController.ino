@@ -1,24 +1,24 @@
 #include <Wire.h>
-#include "I2Cdev.h"
+//#include "I2Cdev.h"
 
 //========================================================================================================================//
 //                                  Joshua Caratao's Quadcopter Flight Controller Code                                    // 
-//           All methods have either been written completely by myself or learned and adapted from other resources.       //
+//      All methods have either been written completely by myself or learned and adapted from other helpful resources.    //
 //========================================================================================================================//
 
 //Declare Radio Reciever Pins
-// const int Chn_1_Pin = ;  //Throttle
-// const int Chn_2_Pin = ;  //Elevator
-// const int Chn_3_Pin = ;  //Aileron
-// const int Chn_4_Pin = ;  //Rudder
-// const int Chn_5_Pin = ;  //Gear (Throttle Cut)
-// const int Chn_6_Pin = ;  // Aux channel
+// const int Chn_1_Pin;  //Throttle
+// const int Chn_2_Pin;  //Elevator
+// const int Chn_3_Pin;  //Aileron
+// const int Chn_4_Pin;  //Rudder
+// const int Chn_5_Pin;  //Gear (Throttle Cut)
+// const int Chn_6_Pin;  // Aux channel
 
 //Declare ESC Output Pins
-// const int Motor_1_Pin  =;
-// const int Motor_2_Pin  =;
-// const int Motor_3_Pin  =;
-// const int Motor_4_Pin  =;
+// const int Motor_1_Pin;
+// const int Motor_2_Pin;
+// const int Motor_3_Pin;
+// const int Motor_4_Pin;
 
 
 //Declare IMU Input Pin
@@ -36,7 +36,7 @@ float rotX, rotY, rotZ;
 //These adjust the full scale Range of the gyro and accel in the IMU. 
 //Change these from a value from 1-4, which 4 being highest range, but least sensitivity
 const int accFullScaleRange = 1;
-const int gyroFullScaleRange = 1;
+const int gyroFullScaleRange = 3;
 
 //Declare Accelerometer and Gyro LSB values for IMU
 float aLSB; 
@@ -77,8 +77,9 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   readIMU(); //This calls both the readIMU function and the ProcessIMU function
-  printData(); //Print out IMU Data
-  delay(100);
+  //printData(); //Print out IMU Data
+  plotData();
+  delay(50);
 }
 
 
@@ -218,7 +219,7 @@ void processIMU() {
   //Compute Accel
   gForceX = (AccX / aLSB) - accOffsetX ;
   gForceY = (AccY / aLSB) - accOffsetY;
-  gForceZ = (AccZ / aLSB) - accOffsetZ + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
+  gForceZ = (AccZ / aLSB) - accOffsetZ; 
 
   //Compute Gyro
   rotX = (GyroX / gLSB) - gyroOffsetX;
@@ -240,17 +241,19 @@ void calibrateIMU(){
   float rotTotalY = 0;
   float rotTotalZ = 0;
 
+  Serial.print("Calibration in Progress...");
+
   int samples = 0;
-  while(((millis() - time1)/ (1000)) < 5){
+  while(((millis() - time1)/ (1000)) < 8){
     readIMU();
     
-    gForceTotalX += gForceX;
-    gForceTotalY += gForceY;
-    gForceTotalZ += gForceZ;
+    gForceTotalX += abs(gForceX);
+    gForceTotalY += abs(gForceY);
+    gForceTotalZ += abs(gForceZ);
 
-    rotTotalX += rotX;
-    rotTotalY += rotY;
-    rotTotalZ += rotZ;  
+    rotTotalX += abs(rotX);
+    rotTotalY += abs(rotY);
+    rotTotalZ += abs(rotZ);  
 
     //increase the sample size by 1 each each loop
     samples += 1;
@@ -259,39 +262,20 @@ void calibrateIMU(){
   //Compute the averages of each IMU value over a 5 second time period (or whatever time period works best) and set the offsets.
   accOffsetX = (gForceTotalX / samples);
   accOffsetY = (gForceTotalY / samples);
-  accOffsetZ = (gForceTotalZ / samples);
+  accOffsetZ = (gForceTotalZ / samples) + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
 
   gyroOffsetX = (rotTotalX / samples);
   gyroOffsetY = (rotTotalY / samples);
-  gyroOffsetZ = (rotTotalZ / samples);
-  
+  gyroOffsetZ = (rotTotalZ / samples); 
+
+  Serial.println();
+  Serial.println("...Calibration Complete...");
+
+  delay(2000);
 }
 
 
 
-//Prints out the IMU Data 
-void printData(){
-  Serial.print("Gyro(deg)");
-  Serial.print(" X=");
-  Serial.print(rotX);
-  Serial.print(" Y=");
-  Serial.print(rotY);
-  Serial.print(" Z=");
-  Serial.print(rotZ);
-
-  Serial.print(" | ");
-
-  Serial.print(" Accel(g)");
-  Serial.print(" X=");
-  Serial.print(gForceX);
-  Serial.print(" Y=");
-  Serial.print(gForceY);
-  Serial.print(" Z=");
-  Serial.print(gForceZ);
-
-  Serial.println(" ");
-
-}
 
 
 
