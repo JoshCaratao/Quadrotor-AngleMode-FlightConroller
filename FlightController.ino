@@ -32,6 +32,16 @@ long GyroX, GyroY, GyroZ;
 //Declare the actual calculated IMU Values
 float gForceX, gForceY, gForceZ;
 float rotX, rotY, rotZ;
+//float oldRotX, oldRotY, oldRotZ;
+
+//Declare the Estimated Attitude Angles according to Gyro
+float gyroAngleX = 0;
+float gyroAngleY = 0;
+float gyroAngleZ = 0;
+
+//Declare Estimated AttitudeAngles According to Accelerometer
+float accelAngleX = 0;
+float accelAngleY = 0;
 
 //These adjust the full scale Range of the gyro and accel in the IMU. 
 //Change these from a value from 1-4, which 4 being highest range, but least sensitivity
@@ -51,6 +61,17 @@ float gyroOffsetX = 0;
 float gyroOffsetY = 0;
 float gyroOffsetZ = 0;
 
+//Declare time variables
+uint32_t gyroLastUpdate =  micros();
+uint32_t deltaT;
+
+//Define Complementary Filter Constants
+#define gyroComplement 0.995
+#define accelComplement 0.005
+
+//Define Radiants to Degree Constant
+//#define RAD_TO_DEG (180/PI)
+
 
 //========================================================================================================================//
 //                                                      VOID SETUP                                                        //                           
@@ -63,6 +84,8 @@ void setup() {
   setLSB(); //This just sets the LSB values according to the FullScaleRange chosen above
   setupMPU(); //sets up the MPU for reading
   calibrateIMU(); //After the program starts, set the craft on a flat surface to calibrate IMU for 5 seconds
+  gyroLastUpdate = micros();
+  readIMU();
 
 }
 
@@ -76,9 +99,9 @@ void setup() {
                                                   
 void loop() {
   // put your main code here, to run repeatedly:
-  readIMU(); //This calls both the readIMU function and the ProcessIMU function
+  computeGyroAngles(); //NOTE: MIGHT BE BETTER TO READIMU AND THEN COMPUTE ANGLES
   //printData(); //Print out IMU Data
-  plotData();
+  plotAngles();
   delay(50);
 }
 
@@ -101,7 +124,7 @@ void setupMPU(){
   //In this case, we write all 0s to make sure that we are not in the sleep mode (look at MPU 6050 datasheet)
   Wire.endTransmission();
 
-//Next, we need to change the range of our measurements and the sensitivity ofr Gyroscope and Accelerometer
+//Next, we need to change the range of our measurements and the sensitivity of Gyroscope and Accelerometer
 //Things to consider, are you going to have spontaneous movements? how much RPM do you expect to be going?
   Wire.beginTransmission(0b1101000);
   Wire.write(0x1B); //Accessing the register 1B - Gyroscope configuration
@@ -175,7 +198,8 @@ void readIMU(){
   GyroY = Wire.read()<<8|Wire.read(); //Store middle two bytes into a 
   GyroZ = Wire.read()<<8|Wire.read(); //Store last two two bytes into a 
 
-  processIMU();
+  processIMU(); //Take the raw values and process them to get rotational rates/acceleration
+  
 }
 
 
@@ -244,7 +268,7 @@ void calibrateIMU(){
   Serial.print("Calibration in Progress...");
 
   int samples = 0;
-  while(((millis() - time1)/ (1000)) < 8){
+  while(((millis() - time1)/ (1000)) < 5){
     readIMU();
     
     gForceTotalX += abs(gForceX);
@@ -276,6 +300,47 @@ void calibrateIMU(){
 
 
 
+//========================================================================================================================//
+//                                               ATTITUDE ESTIMATION FUNCTIONS                                            //                           
+//========================================================================================================================//
+
+
+//Estimate Attitude using Gyro
+void computeGyroAngles() {
+  //Use trapezoidal numerical integration of angular Velocity to get angular position
+  //  oldRotX = rotX;
+  //  oldRotY = rotY;
+  //  oldRotZ = rotZ;
+
+  //Read IMU to get new angular velocity values
+  readIMU();
+
+  deltaT = (micros() - gyroLastUpdate)/ 1000000; //Calculate Change in time since last gyro update in seconds
+
+  gyroAngleX += rotX * deltaT;
+  gyroAngleY += rotY * deltaT;
+  gyroAngleZ += rotZ * deltaT;
+
+  //This is the old way (trapezoidal method)
+  //  angleX = angleX + ((0.5) * (millis() - time) * (oldRotX + rotX));
+  //  angleY = angleY + ((0.5) * (millis() - time) * (oldRotY + rotY));
+  //  angleZ = angleZ + ((0.5) * (millis() - time) * (oldRotZ + rotZ));
+
+  //Update the last time the angles were computed
+  gyroLastUpdate = micros();
+}
+
+//Compute Attitude (roll and pitch only) using Accelerometer
+void computeAccelAngles(){
+  //Note: should use a median filter, implement later, for now just use formulas
+
+  //Read IMU to get new Accel Values
+  readIMU();
+
+  accelAngleX = atan2(gForceY,gForceZ) * RAD_TO_DEG;
+  accelAngleY = atan2(-1 * gForceX, sqrt(gForceY*gForceY + gForceZ*gForceZ)) * RAD_TO_DEG;
+  
+}
 
 
 
