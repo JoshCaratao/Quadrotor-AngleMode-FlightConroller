@@ -14,6 +14,8 @@ HOW IT WORKS:
 
   However, because either sensor is unreliable for accurate attitude estimation alone, I implmented a sensor fusion algorithm through a simple complementary filter to combine both sensor measurements into one, more reliable measurement.
 
-Progress Notes:
-  11/18/23 - Restructured Flight Controller V1 and im now able to reliably read, process, and output angular velocity values and acceleration values from the external IMU using my custom library
+
+PROGRESS NOTES:
+
+11/18/23 - Restructured Flight Controller V1 and im now able to reliably read, process, and output angular velocity values and acceleration values from the external IMU using my custom library
              TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estimation through gyro and accelerometer separately first.
