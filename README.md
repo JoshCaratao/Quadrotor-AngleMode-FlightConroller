@@ -8,7 +8,9 @@ HOW IT WORKS:
 
   So far, the flight controller runs a main program called "FlightController" and a separate program for outputting serial data to the terminal and to graph visualizers in the Arduino IDE (for testing purposes)
 
-  Using the I2C communication protocol to allow for proper communication between the Arduino and the IMU, raw data values are taken in and converted to rotational rates and linear accelerations. From these, separate roll, pitch, and yaw angles are calculated using numerical integration(gyroscope) and trigonemetric equations (accelerometer).
+  Using the I2C communication protocol to allow for proper communication between the Arduino and the IMU I created my own custom library for easily retrieving data from the MPU6060 (Further description in the Source file). 
+  
+  Using the angular velocities and linear accelerations retrieved from the IMU, separate roll, pitch, and yaw angles are calculated using numerical integration(gyroscope) and trigonemetric equations (accelerometer).
 
   However, because either sensor is unreliable for accurate attitude estimation alone, I implmented a sensor fusion algorithm through a simple complementary filter to combine both sensor measurements into one, more reliable measurement.
 
