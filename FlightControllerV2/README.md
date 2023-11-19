@@ -8,7 +8,7 @@ The change from V1 to V2 includes major restructuring towards using custom libra
 HOW IT WORKS:
   So far, the flight controller runs a main program called "FlightController_VX.X" which is the main logic and uses custom libraries to retrieve IMU Data and make necessary computations such as attitude estimation. 
 
-  Using the I2C communication protocol to allow for proper communication between the Arduino and the IMU I wrote my own custom library for easily retrieving data from the MPU6060 (Further description in the Source file). 
+  Using the I2C communication protocol to allow for proper communication between the Arduino and the IMU I wrote my own custom library for easily retrieving data from the MPU6050 (Further description in the Source file). 
   
   Using the angular velocities and linear accelerations retrieved from the IMU, separate roll, pitch, and yaw angles are calculated using numerical integration(gyroscope) and trigonemetric equations (accelerometer).
 
