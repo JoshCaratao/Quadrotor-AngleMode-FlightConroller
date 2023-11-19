@@ -11,7 +11,7 @@ The change from V1 to V2 includes major restructuring towards using custom libra
   
   Using the angular velocities and linear accelerations retrieved from the IMU, separate roll, pitch, and yaw angles are calculated using numerical integration(gyroscope) and trigonemetric equations (accelerometer).
 
-  However, because either sensor is unreliable for accurate attitude estimation alone, I implmented a sensor fusion algorithm through a simple complementary filter to combine both sensor measurements into one, more reliable measurement.
+  However, because neither sensor is reliable enough alone for accurate attitude estimation alone, I implmented a sensor fusion algorithm through a simple complementary filter to combine both sensor measurements into one, more reliable measurement.
 
 
 
