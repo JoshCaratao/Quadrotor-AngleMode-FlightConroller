@@ -164,6 +164,7 @@ void IMU::setLSB(int accFullScaleRange, int gyroFullScaleRange){
 //                                          This function calculates the acceleration and gyro offsets.                                      //                           
 //===========================================================================================================================================//
 void IMU::calibrateIMU(){
+  const int numSamples = 1000; //Can adjust number of samples as needed
   
   //Sets the total of the IMU values recorded to be averaged
   float AccTotalX = 0;
@@ -175,12 +176,8 @@ void IMU::calibrateIMU(){
 
   Serial.print("Calibration in Progress...");
 
-  //Set begin time
-  float time1 = millis();
-
-  int samples = 0;
-  while(((millis() - time1)/ (1000)) < 5){
-
+  for(int i = 0; i<numSamples; i++){
+    //Read data from IMU
     readIMU(); //Not storing returned struct here as I have a global struct that this function changes already
 
     AccTotalX += abs(IMUData.AccX);
@@ -191,21 +188,34 @@ void IMU::calibrateIMU(){
     GyroTotalY += abs(IMUData.GyroY);
     GyroTotalZ += abs(IMUData.GyroZ);  
 
-    //increase the sample size by 1 each each loop
-    samples += 1;
+    delay(5);
   }
 
   //Compute the averages of each IMU value over a 5 second time period (or whatever time period works best) and set the offsets.
-  accOffsetX = (AccTotalX / samples);
-  accOffsetY = (AccTotalY / samples);
-  accOffsetZ = (AccTotalZ / samples) + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
+  accOffsetX = (AccTotalX / numSamples);
+  accOffsetY = (AccTotalY / numSamples);
+  accOffsetZ = (AccTotalZ / numSamples) + 1; //Add 1 here to calibrate the z-acceleration to 1G (gravity)
 
-  gyroOffsetX = (GyroTotalX / samples);
-  gyroOffsetY = (GyroTotalY / samples);
-  gyroOffsetZ = (GyroTotalZ / samples); 
+  gyroOffsetX = (GyroTotalX / numSamples);
+  gyroOffsetY = (GyroTotalY / numSamples);
+  gyroOffsetZ = (GyroTotalZ / numSamples); 
 
   Serial.println();
   Serial.println("...Calibration Complete...");
+
+   // Display or log the calibrated biases
+  Serial.print("Gyro Bias: X=");
+  Serial.print(gyroOffsetX);
+  Serial.print(" Y=");
+  Serial.print(gyroOffsetY);
+  Serial.print(" Z=");
+  Serial.println(gyroOffsetZ);
+  Serial.print("Accel Bias: X=");
+  Serial.print(accOffsetX);
+  Serial.print(" Y=");
+  Serial.print(accOffsetY);
+  Serial.print(" Z=");
+  Serial.println(accOffsetZ);
 
   delay(2000);
 }

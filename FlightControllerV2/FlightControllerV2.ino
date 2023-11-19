@@ -45,13 +45,19 @@ void setup() {
 }
 
 void loop() {
-
   IMUData = droneIMU.readIMU();
+  sendSerialData();
+  //printData();
+  //plotData();
+  
+  delay(100);
+}
 
-  printData();
-  plotData();
-  
-  
+//Send Serial Data to Matlab
+void sendSerialData(){
+  String serialString = String(IMUData.AccX) + ',' + String(IMUData.AccY) + ',' + String(IMUData.AccZ) + ',' + String(IMUData.GyroX) + ',' + String(IMUData.GyroY) + ',' + String(IMUData.GyroZ);
+
+  Serial.println(serialString);
 }
 
 
@@ -82,6 +88,19 @@ void printData(){
 
 
 void plotData(){
+  // Send data to Serial Plotter
+  Serial.print("Accel_X:");
+  Serial.print(IMUData.AccX);
+  Serial.print(", ");
+
+   Serial.print("Accel_Y:");
+  Serial.print(IMUData.AccY);
+  Serial.print(", ");
+
+  Serial.print("Accel_Z:");
+  Serial.print(IMUData.AccZ);
+  Serial.print(", ");
+
   Serial.print("gyro_X:");
   Serial.print(IMUData.GyroX);
   Serial.print(", ");
@@ -91,22 +110,8 @@ void plotData(){
   Serial.print(", ");
 
   Serial.print("gyro_Z:");
-  Serial.print(IMUData.GyroZ);
-  Serial.print(", | ");
+  Serial.println(IMUData.GyroZ);
 
-  Serial.print("Accel_X:");
-  Serial.print(IMUData.AccX);
-  Serial.print(", ");
-
-  Serial.print("Accel_Y:");
-  Serial.print(IMUData.AccY);
-  Serial.print(", ");
-
-  Serial.print("Accel_Z:");
-  Serial.print(IMUData.AccZ);
-  Serial.print(", ");
-
-  Serial.println();
 }
 
 
