@@ -20,3 +20,5 @@ The change from V1 to V2 includes major restructuring towards using custom libra
 11/18/23 - Restructured Flight Controller V1 and im now able to reliably read, process, and output angular velocity values and acceleration values from the external IMU using my custom library
             
 TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estimation through gyro and accelerometer separately first.
+
+11/19/23 - Made changes to my calibration function. Rather than a set time for calibration, it takes a specified amount of samples for averaging and calculating offset values. Also working on a matlab script to allow for live visualization of sensor data
