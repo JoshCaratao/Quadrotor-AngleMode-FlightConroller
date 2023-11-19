@@ -18,4 +18,5 @@ The change from V1 to V2 includes major restructuring towards using custom libra
 ## PROGRESS NOTES:
 
 11/18/23 - Restructured Flight Controller V1 and im now able to reliably read, process, and output angular velocity values and acceleration values from the external IMU using my custom library
-             TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estimation through gyro and accelerometer separately first.
+            
+TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estimation through gyro and accelerometer separately first.
