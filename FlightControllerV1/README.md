@@ -1,4 +1,4 @@
-FLIGHT CONTROLLER V1
+# **FLIGHT CONTROLLER V1**
 
 This was my first main iteration of the flight controller which achieved IMU Data retrieval and separate attitude estimation values from a gyroscope and accelerometer.
 
