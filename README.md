@@ -9,4 +9,4 @@
 This should still work for other arduinos/microcontrollers, however, pins may differ. Additionally, if you are using a microcontroller with its own internal sensors (gyroscope and accelerometer), functions to get those sensor readings will differ.
   
 
-My overall goals are to successfully, read IMU Data from the MPU-6050 to calculate craft orientation and implement a PID Controller for self-leveling. 
+My overall goals are to successfully, read IMU Data from the MPU-6050 to calculate craft orientation and implement a PID Controller to drive Brushless DC Motors for self-leveling. 
