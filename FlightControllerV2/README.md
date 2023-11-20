@@ -21,4 +21,4 @@ The change from V1 to V2 includes major restructuring towards using custom libra
             
 TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estimation through gyro and accelerometer separately first.
 
-11/19/23 - Made changes to my calibration function. Rather than a set time for calibration, it takes a specified amount of samples for averaging and calculating offset values. Also working on a matlab script to allow for live visualization of sensor data
+11/19/23 - Made changes to my calibration function. Rather than a set time for calibration, it takes a specified amount of samples for averaging and calculating offset values. Also working on a matlab script to allow for live visualization of sensor data. Also added in a new struct class for storing state attitude data and a new class for performing attitude estimation.
