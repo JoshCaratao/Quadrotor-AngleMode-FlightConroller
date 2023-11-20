@@ -2,6 +2,8 @@
 //#include "I2Cdev.h"
 #include "IMU.h"
 #include "IMUStruct.h"
+#include "attitudeData.h"
+#include "system.h"
 
 //========================================================================================================================//
 //                                  Joshua Caratao's Quadcopter Flight Controller Code V2.0                               // 
@@ -15,7 +17,7 @@ const int accFullScaleRange = 1;
 const int gyroFullScaleRange = 4;
 
 //Inititialize IMU Object Instance
-IMU droneIMU;
+IMU systemIMU;
 
 //Declare the Estimated Attitude Angles according to Gyro
 float gyroAngleX = 0;   
@@ -26,32 +28,44 @@ float gyroAngleZ = 0;
 float accelAngleX = 0;
 float accelAngleY = 0;
 
-//Declare Angular Velocities and Accelerations from IMU
-// float AccX, AccY, AccZ;
-// float GyroX, GyroY, GyroZ;
+//initialize struct for storing IMU Data
 IMUStruct IMUData;
 
+//Initialize struct for storing drone attitude estimations
+attitudeData systemState;
 
+//Initalize value of complemetary filter gains. Change as needed for tuning. This represents the weight of the Gyroscope
+float alpha = 0.98;
+
+//initialize instance of system class for calculating system state/attitude and pass in filter weight
+//system Drone(alpha);
 
 void setup() {
   Serial.begin(9600);
   Wire.begin(); //This initializes I2C communication. It is absolutely essential
 
   //IMU Setup and calibration functions
-  droneIMU.setupIMU(accFullScaleRange, gyroFullScaleRange);
-  droneIMU.setLSB(accFullScaleRange, gyroFullScaleRange);
-  droneIMU.calibrateIMU();
+  systemIMU.setupIMU(accFullScaleRange, gyroFullScaleRange);
+  systemIMU.setLSB(accFullScaleRange, gyroFullScaleRange);
+  systemIMU.calibrateIMU();
   
+  //initialize instance of System class for calculating system state/attitude and pass in filter weight
+  System Drone(alpha);
 }
 
 void loop() {
-  IMUData = droneIMU.readIMU();
+  IMUData = systemIMU.readIMU();
   sendSerialData();
   //printData();
   //plotData();
   
   delay(100);
 }
+
+
+
+
+
 
 //Send Serial Data to Matlab
 void sendSerialData(){
