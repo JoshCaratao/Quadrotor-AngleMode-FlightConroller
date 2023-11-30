@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include "IMUStruct.h"
 
-IMU::IMU(){ //Constructor inititialization
+MPU6050::MPU6050(){ //Constructor inititialization
 
   //Initialize Accelerometer and Gyro Offset Values 
   accOffsetX = 0;
@@ -21,7 +21,7 @@ IMU::IMU(){ //Constructor inititialization
 //                                                             IMU SETUP                                                                     //
 //This Function establishes communication with an MPU6050 and sets up all the registers which we will be using to read the data from the IMU //                                                      //                           
 //===========================================================================================================================================//
-void IMU::setupIMU(int gyroFullScaleRange, int accFullScaleRange){
+void MPU6050::setupMPU6050(int gyroFullScaleRange, int accFullScaleRange){
   Wire.beginTransmission(0b1101000); //This is the I2C address of the IMU
   Wire.write(0x6B); //Accessing the register 6B - Power management (Sec. 4.28) This register allows the user to configure the power mode.
   //From the datasheet, we know that the device starts up in sleep mode. Hence, we acccess this register to change that.
@@ -82,7 +82,7 @@ void IMU::setupIMU(int gyroFullScaleRange, int accFullScaleRange){
 //                                                             IMU READING                                                                                                //
 //This function  reads the data from the IMU and calls the processIMU function to compute the values of acceleration and rotational velocity, and then returns the values //                                                      //                           
 //========================================================================================================================================================================//
-IMUStruct IMU::readIMU(){
+IMUStruct MPU6050::readMPU6050(){
   //NOTE: According to the datasheet. The actual gyro and accel values we want must be calculated from the raw readings by 
   //dividing by the LSB/g value, which depends on the FullScaleRange used.
 
@@ -127,7 +127,7 @@ IMUStruct IMU::readIMU(){
 //                                                             IMU SET LSB                                                                   //
 //         This sets the LSB/g and LSB/deg/s values used to calculate data from IMU. This should be run before any other IMU Function        //                           
 //===========================================================================================================================================//
-void IMU::setLSB(int accFullScaleRange, int gyroFullScaleRange){
+void MPU6050::setLSB(int accFullScaleRange, int gyroFullScaleRange){
   //Set Accel LSB
   if(accFullScaleRange == 1){
     aLSB = 16384.0;
@@ -163,7 +163,7 @@ void IMU::setLSB(int accFullScaleRange, int gyroFullScaleRange){
 //                                                             IMU Calibration                                                               //
 //                                          This function calculates the acceleration and gyro offsets.                                      //                           
 //===========================================================================================================================================//
-void IMU::calibrateIMU(){
+void MPU6050::calibrateMPU6050(){
   const int numSamples = 1000; //Can adjust number of samples as needed
   
   //Sets the total of the IMU values recorded to be averaged
@@ -174,11 +174,11 @@ void IMU::calibrateIMU(){
   float GyroTotalY = 0;
   float GyroTotalZ = 0;
 
-  Serial.print("Calibration in Progress...");
+  Serial.println("Calibration in Progress...");
 
   for(int i = 0; i<numSamples; i++){
     //Read data from IMU
-    readIMU(); //Not storing returned struct here as I have a global struct that this function changes already
+    readMPU6050(); //Not storing returned struct here as I have a global struct that this function changes already
 
     AccTotalX += abs(IMUData.AccX);
     AccTotalY += abs(IMUData.AccY);

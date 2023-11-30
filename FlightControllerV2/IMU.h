@@ -5,14 +5,14 @@
 #include <Wire.h>
 #include "IMUStruct.h"
 
-class IMU {
+class MPU6050 {
 
   public:
-    IMU(); //Constructor
-    void setupIMU(int accFullScaleRange, int gyroFullScaleRange);
+    MPU6050(); //Constructor
+    void setupMPU6050(int accFullScaleRange, int gyroFullScaleRange);
     void setLSB(int accFullScaleRange, int gyroFullScaleRange);
-    void calibrateIMU();
-    IMUStruct readIMU();
+    void calibrateMPU6050();
+    IMUStruct readMPU6050();
     
 
 

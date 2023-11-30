@@ -14,10 +14,10 @@
 //These adjust the full scale Range of the gyro and accel in the IMU. 
 //Change these from a value from 1-4, which 4 being highest range, but least sensitivity
 const int accFullScaleRange = 1;
-const int gyroFullScaleRange = 4;
+const int gyroFullScaleRange = 1;
 
 //Inititialize IMU Object Instance
-IMU systemIMU;
+MPU6050 systemIMU;
 
 //Declare the Estimated Attitude Angles according to Gyro
 float gyroAngleX = 0;   
@@ -40,26 +40,38 @@ float alpha = 0.98;
 //initialize instance of system class for calculating system state/attitude and pass in filter weight
 //system Drone(alpha);
 
+double prevTime = micros();
+
 void setup() {
   Serial.begin(9600);
   Wire.begin(); //This initializes I2C communication. It is absolutely essential
 
   //IMU Setup and calibration functions
-  systemIMU.setupIMU(accFullScaleRange, gyroFullScaleRange);
+  systemIMU.setupMPU6050(accFullScaleRange, gyroFullScaleRange);
+  Serial.println("IMU Initialized...");
+  delay(1000);
   systemIMU.setLSB(accFullScaleRange, gyroFullScaleRange);
-  systemIMU.calibrateIMU();
+  Serial.println("LSB Set...");
+  delay(1000);
+  systemIMU.calibrateMPU6050();
   
   //initialize instance of System class for calculating system state/attitude and pass in filter weight
   System Drone(alpha);
+
 }
 
+
 void loop() {
-  IMUData = systemIMU.readIMU();
-  sendSerialData();
+  IMUData = systemIMU.readMPU6050();
+
+  //Send Serial Data to Matlab
+  if(((micros() - prevTime) / 1000000) >= 0.1){
+    sendSerialIMUData();
+  }
+
   //printData();
   //plotData();
   
-  delay(100);
 }
 
 
@@ -68,7 +80,7 @@ void loop() {
 
 
 //Send Serial Data to Matlab
-void sendSerialData(){
+void sendSerialIMUData(){
   String serialString = String(IMUData.AccX) + ',' + String(IMUData.AccY) + ',' + String(IMUData.AccZ) + ',' + String(IMUData.GyroX) + ',' + String(IMUData.GyroY) + ',' + String(IMUData.GyroZ);
 
   Serial.println(serialString);
@@ -78,7 +90,7 @@ void sendSerialData(){
 
 //Prints out the IMU Data 
 void printData(){
-  Serial.print("Gyro(deg)");
+  Serial.print("Gyro(deg/s)");
   Serial.print(" X=");
   Serial.print(IMUData.GyroX);
   Serial.print(" Y=");
