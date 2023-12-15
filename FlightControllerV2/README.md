@@ -1,7 +1,7 @@
 # **FLIGHT CONTROLLER V2.0**
 
 
-The change from V1 to V2 includes major restructuring towards using custom libraries and more object oriented programming to simplify and better the readability of the main flight controller sketch file. 
+The change from V1 to V2 includes major restructuring towards developing and using my own custom libraries and more object oriented programming to simplify and better the readability of the main flight controller sketch file. 
 
 
 ## HOW IT WORKS:
