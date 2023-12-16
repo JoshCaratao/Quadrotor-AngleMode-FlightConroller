@@ -25,3 +25,6 @@ TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estim
 
 
 11/29/23  - Made slight changes to IMU file. Class is now called MPU6050 to specifiy the IMU that the code works with. Also switching to a data collector matlab script that plots the data after collection for testing rather than simultaneous data collecting and plotting.
+
+
+12/15/23 - Restructured flight controller once more. Deleted unecessary Structs and decided to just refer to the class variables directly in the the main sketch. I also renamed the classes to be more accurate. This made the flight controller code much more readable and easy to follow in my opinion. I also fixed my axes for my gyro and accelerometer values according to an online resource. When flat, the Z acceleration reads 1 rather than -1 now. I also decided to align the axes with the MPU 6050 Axes to help mitigate confusion between axes and pitch/roll/yaw axes. The roll now refers to the Y axis, etc.
