@@ -12,6 +12,10 @@
 //      All methods have either been written completely by myself or learned and adapted from other helpful resources.    //
 //========================================================================================================================//
 
+//Define Pin Pames
+#define RED_LED 13
+#define GREEN_LED 2
+
 
 //These adjust the full scale Range of the gyro and accel in the IMU. 
 //Change these from a value from 1-4, which 4 being highest range, but least sensitivity
@@ -42,6 +46,14 @@ float alpha = 0.98;
 double prevTime = micros();
 
 void setup() {
+
+  //Setup Indicator LEDs
+  pinMode(RED_LED, OUTPUT); //Red LED
+  pinMode(GREEN_LED, OUTPUT); //Green LED
+
+  //Turn on RED LED during system Setup
+  digitalWrite(RED_LED, HIGH);
+
   Serial.begin(9600);
   Wire.begin(); //This initializes I2C communication. It is absolutely essential
 
@@ -57,6 +69,9 @@ void setup() {
   //initialize instance of System class for calculating system state/attitude and pass in filter weight. I do it in here so that the timer for gyro state estimation doesnt begin too early.
   StateEstimator state(alpha);
 
+  //Turn off RED LED and turn GREEN LED on
+  digitalWrite(RED_LED, LOW);
+  digitalWrite(GREEN_LED, HIGH);
 }
 
 
@@ -68,8 +83,8 @@ void loop() {
   //   sendSerialIMUData();
   // }
 
-  printData();
-  plotData();
+  //printData();
+  //plotData();
   
 }
 

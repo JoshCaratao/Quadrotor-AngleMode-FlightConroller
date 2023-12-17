@@ -175,7 +175,18 @@ void MyMPU6050::calibrateMPU6050(){
 
   Serial.println("Calibration in Progress...");
 
+  unsigned long ledTimer = millis();
+
   for(int i = 0; i<numSamples; i++){
+
+    //Blink RED LED during calibration
+    if((millis() - ledTimer) >= 500) {
+      Serial.print("blink");
+      digitalWrite(13, !(digitalRead(13)));
+      ledTimer = millis();
+    }
+
+
     //Read data from IMU
     readMPU6050(); //Not storing returned struct here as I have a global struct that this function changes already
 
@@ -188,6 +199,11 @@ void MyMPU6050::calibrateMPU6050(){
     GyroTotalZ += abs(GyroZ);  
 
     delay(5);
+  }
+
+  //Check if LED was left off, and turn back on before ending calibration function
+  if(digitalRead(13) == LOW){
+    digitalWrite(13, HIGH);
   }
 
   //Compute the averages of each IMU value over a 5 second time period (or whatever time period works best) and set the offsets.
