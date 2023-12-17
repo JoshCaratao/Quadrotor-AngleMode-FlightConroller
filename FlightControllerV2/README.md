@@ -28,3 +28,6 @@ TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estim
 
 
 12/15/23 - Restructured flight controller once more. Deleted unecessary Structs and decided to just refer to the class variables directly in the the main sketch. I also renamed the classes to be more accurate. This made the flight controller code much more readable and easy to follow in my opinion. I also fixed my axes for my gyro and accelerometer values according to an online resource. When flat, the Z acceleration reads 1 rather than -1 now. I also decided to align the axes with the MPU 6050 Axes to help mitigate confusion between axes and pitch/roll/yaw axes. The roll now refers to the Y axis, etc.
+
+
+12/17/23 - Updated my physical Flight controller with Indicator LEDS. Programmed those into my main flight controller program. Now, during the setup a RED LED lights up, and during calibration, the LED blinks, alternating every half second. Once calibration and set up are complete, the red LED turns off and the Green LED turns on, letting the user know that the flight controller has entered the main loop and is ready.
