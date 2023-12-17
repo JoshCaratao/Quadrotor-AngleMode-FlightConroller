@@ -83,8 +83,8 @@ void loop() {
   //   sendSerialIMUData();
   // }
 
-  //printData();
-  //plotData();
+  printData();
+  plotData();
   
 }
 

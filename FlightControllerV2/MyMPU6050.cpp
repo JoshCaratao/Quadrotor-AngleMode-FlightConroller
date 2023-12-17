@@ -181,7 +181,6 @@ void MyMPU6050::calibrateMPU6050(){
 
     //Blink RED LED during calibration
     if((millis() - ledTimer) >= 500) {
-      Serial.print("blink");
       digitalWrite(13, !(digitalRead(13)));
       ledTimer = millis();
     }
