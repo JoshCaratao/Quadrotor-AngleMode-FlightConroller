@@ -5,15 +5,11 @@ The change from V1 to V2 includes major restructuring towards developing and usi
 
 
 ## HOW IT WORKS:
-  So far, the flight controller runs a main program called "FlightController_VX.X" which is the main logic and uses custom libraries to retrieve IMU Data and make necessary computations such as attitude estimation. 
 
-  Using the I2C communication protocol to allow for proper communication between the Arduino and the IMU I wrote my own custom library for easily retrieving data from the MPU6050 (Further description in the Source file). 
+### State Estimation
+
+  Using an MPU-6050 Library/Driver I wrote with the help of online resouces and the MPU-6050 Data Sheet, my flight controller is able to retrieve gyroscope and accelerometer readings from the Inertial Measurement Unit (IMU). For each axis (roll, pitch, and yaw), the flight controller then uses my "StateEstimator" Library to estimate the drone's roll, pitch, and yaw angles using a complementary filter that fuses the gyroscope and accelerometer data for a more accurate state estimation. 
   
-  Using the angular velocities and linear accelerations retrieved from the IMU, separate roll, pitch, and yaw angles are calculated using numerical integration(gyroscope) and trigonemetric equations (accelerometer).
-
-  However, because neither sensor is reliable enough alone for accurate attitude estimation alone, I implmented a sensor fusion algorithm through a simple complementary filter to combine both sensor measurements into one, more reliable measurement.
-
-
 
 ## PROGRESS NOTES:
 
