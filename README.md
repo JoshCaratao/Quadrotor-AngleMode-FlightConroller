@@ -6,7 +6,7 @@
 
 *NOTE*: Flight Controller V1 is no longer worked on and I have moved onto V2 which includes major upgrades in its structure.
 
-This should still work for other arduinos/microcontrollers, however, pins may differ. Additionally, if you are using a microcontroller with its own internal sensors (gyroscope and accelerometer), functions to get those sensor readings will differ.
+This should still work for other arduinos/microcontrollers, however, pins may differ. Additionally, if you are using a microcontroller with its own internal sensors (gyroscope and accelerometer) or a different IMU, Those will require different drivers or libraries than the ones I have written in my own code. 
   
 
 My overall goals are to successfully, read IMU Data from the MPU-6050 to calculate craft orientation and implement an Angle Mode PID Controller to drive Brushless DC Motors for self-leveling of the quadrotor craft. 
