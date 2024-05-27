@@ -42,3 +42,5 @@ TO DO NEXT:  Figure out Serial Plotting for testing, and implment attitude estim
 
 
 12/17/23 - Updated my physical Flight controller with Indicator LEDS. Programmed those into my main flight controller program. Now, during the setup a RED LED lights up, and during calibration, the LED blinks, alternating every half second. Once calibration and set up are complete, the red LED turns off and the Green LED turns on, letting the user know that the flight controller has entered the main loop and is ready.
+
+5/27/14 - Added Complementary Filter to fuse Gyro and Accelerometer Sensor data for more accurate Attitude Estimation. Also added in note to test/implement a low pass filter on the accelerometer measurements to filter out high frequency noise.
