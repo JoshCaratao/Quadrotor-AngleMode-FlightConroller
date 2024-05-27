@@ -15,7 +15,7 @@ StateEstimator::StateEstimator(float alpha){ //Constructor inititialization
   //Initialize fused system state to 0
   Roll = 0;
   Pitch = 0;
-  Yaw;
+  Yaw = 0;
 
   //initialize prevTime as 0
   prevTime = 0;
@@ -31,8 +31,10 @@ void StateEstimator::computeState(float gyroX, float gyroY, float gyroZ, float a
   computeGyroState(gyroX, gyroY, gyroZ);
   computeAccState(accX, accY, accZ);
 
-  //Implement complementary filter as a sensor fusion algorithm for more accurate state estimation
-
+  //Implement complementary filter to fuse the sensor data/estimation from the gyroscope with accelerometer. 
+  Roll = (Kg * gyroRoll) + (Ka * accRoll);
+  Pitch = (Kg * gyroPitch) + (Ka * accPitch);
+  Yaw = gyroYaw; // Assuming no other sensor data for yaw 
 }
 
 
@@ -57,4 +59,3 @@ void StateEstimator::computeAccState(float accX, float accY, float accZ){
   accRoll = atan2(-1 * accX, sqrt(accY*accY + accZ*accZ)) * RAD_TO_DEG;
 
 }
-
